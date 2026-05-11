@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="vehicle.srv.VehicleApi" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="vehicles" EntityType="vehicle.srv.VehicleApi.vehicles">
+          <NavigationPropertyBinding Path="Items" Target="vehicle_Items"/>
+          <NavigationPropertyBinding Path="Order" Target="orders"/>
+        </EntitySet>
+        <EntitySet Name="orders" EntityType="vehicle.srv.VehicleApi.orders">
+          <NavigationPropertyBinding Path="Vehicle_id" Target="vehicles"/>
+          <NavigationPropertyBinding Path="Dealer_ID" Target="dealers"/>
+          <NavigationPropertyBinding Path="Items" Target="vehicle_Items"/>
+        </EntitySet>
+        <EntitySet Name="dealers" EntityType="vehicle.srv.VehicleApi.dealers">
+          <NavigationPropertyBinding Path="Order" Target="orders"/>
+        </EntitySet>
+        <EntitySet Name="state_taxes" EntityType="vehicle.srv.VehicleApi.state_taxes">
+          <NavigationPropertyBinding Path="Vehicle" Target="vehicle_Items"/>
+        </EntitySet>
+        <EntitySet Name="stocks" EntityType="vehicle.srv.VehicleApi.stocks">
+          <NavigationPropertyBinding Path="Vehicle_id" Target="vehicles"/>
+        </EntitySet>
+        <EntitySet Name="vehicle_Items" EntityType="vehicle.srv.VehicleApi.vehicle_Items">
+          <NavigationPropertyBinding Path="Vehicles_brand_id" Target="vehicles"/>
+          <NavigationPropertyBinding Path="State_Tax_id" Target="state_taxes"/>
+          <NavigationPropertyBinding Path="Order" Target="orders"/>
+        </EntitySet>
+        <EntitySet Name="cities" EntityType="vehicle.srv.VehicleApi.cities"/>
+        <EntitySet Name="VehicleID" EntityType="vehicle.srv.VehicleApi.VehicleID"/>
+        <FunctionImport Name="getLatLongitude" Function="vehicle.srv.VehicleApi.getLatLongitude"/>
+      </EntityContainer>
+      <EntityType Name="vehicles">
+        <Key>
+          <PropertyRef Name="Vehicles_ID"/>
+        </Key>
+        <Property Name="Vehicles_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="ModelName" Type="Edm.String"/>
+        <Property Name="Old_Price" Type="Edm.Int32"/>
+        <Property Name="New_Price" Type="Edm.Int32"/>
+        <NavigationProperty Name="Items" Type="Collection(vehicle.srv.VehicleApi.vehicle_Items)" Partner="Vehicles_brand_id"/>
+        <NavigationProperty Name="Order" Type="Collection(vehicle.srv.VehicleApi.orders)" Partner="Vehicle_id">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="orders">
+        <Key>
+          <PropertyRef Name="Order_ID"/>
+        </Key>
+        <Property Name="Order_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="Quantity" Type="Edm.Int32"/>
+        <NavigationProperty Name="Vehicle_id" Type="vehicle.srv.VehicleApi.vehicles" Partner="Order">
+          <ReferentialConstraint Property="Vehicle_id_Vehicles_ID" ReferencedProperty="Vehicles_ID"/>
+        </NavigationProperty>
+        <Property Name="Vehicle_id_Vehicles_ID" Type="Edm.String"/>
+        <NavigationProperty Name="Dealer_ID" Type="vehicle.srv.VehicleApi.dealers" Partner="Order">
+          <ReferentialConstraint Property="Dealer_ID_Dealer_ID" ReferencedProperty="Dealer_ID"/>
+        </NavigationProperty>
+        <Property Name="Dealer_ID_Dealer_ID" Type="Edm.String"/>
+        <NavigationProperty Name="Items" Type="Collection(vehicle.srv.VehicleApi.vehicle_Items)"/>
+      </EntityType>
+      <EntityType Name="dealers">
+        <Key>
+          <PropertyRef Name="Dealer_ID"/>
+        </Key>
+        <Property Name="Dealer_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="Dealer_Name" Type="Edm.String"/>
+        <Property Name="Location" Type="Edm.String"/>
+        <Property Name="City" Type="Edm.String"/>
+        <Property Name="State" Type="Edm.String"/>
+        <Property Name="country" Type="Edm.String"/>
+        <Property Name="pincode" Type="Edm.String"/>
+        <Property Name="latitude" Type="Edm.String"/>
+        <Property Name="longitude" Type="Edm.String"/>
+        <NavigationProperty Name="Order" Type="Collection(vehicle.srv.VehicleApi.orders)" Partner="Dealer_ID">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="state_taxes">
+        <Key>
+          <PropertyRef Name="State_ID"/>
+        </Key>
+        <Property Name="State_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="State" Type="Edm.String"/>
+        <Property Name="Tax_Amount" Type="Edm.Int32"/>
+        <Property Name="State_Code" Type="Edm.String"/>
+        <NavigationProperty Name="Vehicle" Type="Collection(vehicle.srv.VehicleApi.vehicle_Items)" Partner="State_Tax_id"/>
+      </EntityType>
+      <EntityType Name="stocks">
+        <Key>
+          <PropertyRef Name="Stock_ID"/>
+        </Key>
+        <Property Name="Stock_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="No_Of_Stock" Type="Edm.Int32"/>
+        <NavigationProperty Name="Vehicle_id" Type="vehicle.srv.VehicleApi.vehicles">
+          <ReferentialConstraint Property="Vehicle_id_Vehicles_ID" ReferencedProperty="Vehicles_ID"/>
+        </NavigationProperty>
+        <Property Name="Vehicle_id_Vehicles_ID" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="vehicle_Items">
+        <Key>
+          <PropertyRef Name="Vehicle_ID"/>
+        </Key>
+        <Property Name="Vehicle_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="Total_Price" Type="Edm.Int32"/>
+        <NavigationProperty Name="Vehicles_brand_id" Type="vehicle.srv.VehicleApi.vehicles" Partner="Items">
+          <ReferentialConstraint Property="Vehicles_brand_id_Vehicles_ID" ReferencedProperty="Vehicles_ID"/>
+        </NavigationProperty>
+        <Property Name="Vehicles_brand_id_Vehicles_ID" Type="Edm.String"/>
+        <NavigationProperty Name="State_Tax_id" Type="vehicle.srv.VehicleApi.state_taxes" Partner="Vehicle">
+          <ReferentialConstraint Property="State_Tax_id_State_ID" ReferencedProperty="State_ID"/>
+        </NavigationProperty>
+        <Property Name="State_Tax_id_State_ID" Type="Edm.String"/>
+        <Property Name="Order_id_Order_ID" Type="Edm.String"/>
+        <NavigationProperty Name="Order" Type="vehicle.srv.VehicleApi.orders">
+          <ReferentialConstraint Property="Order_id_Order_ID" ReferencedProperty="Order_ID"/>
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="cities">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="district" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="VehicleID">
+        <Key>
+          <PropertyRef Name="Vehicles_ID"/>
+        </Key>
+        <Property Name="Vehicles_ID" Type="Edm.String" Nullable="false"/>
+      </EntityType>
+      <ComplexType Name="return_vehicle_srv_VehicleApi_getLatLongitude">
+        <Property Name="latitude" Type="Edm.Decimal" Precision="9" Scale="6"/>
+        <Property Name="longitude" Type="Edm.Decimal" Precision="9" Scale="6"/>
+      </ComplexType>
+      <Function Name="getLatLongitude" IsBound="false" IsComposable="false">
+        <Parameter Name="ID" Type="Edm.String"/>
+        <ReturnType Type="vehicle.srv.VehicleApi.return_vehicle_srv_VehicleApi_getLatLongitude"/>
+      </Function>
+      <Annotations Target="vehicle.srv.VehicleApi.getLatLongitude(Edm.String)/ID">
+        <Annotation Term="Core.OptionalParameter">
+          <Record Type="Core.OptionalParameterType"/>
+        </Annotation>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
