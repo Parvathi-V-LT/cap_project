@@ -24,6 +24,18 @@
           "odataVersion": "4.01"
         }
       }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "fiori-display": {
+          "semanticObject": "fiori",
+          "action": "display",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
     }
   },
   "sap.ui": {
@@ -185,7 +197,7 @@
           "contextPattern": "/customers({key})/order_ref({key2})"
         }
       }
-    },
+    }, 
     "rootView": {
       "viewName": "sap.fe.templates.RootContainer.view.Fcl",
       "type": "XML",
@@ -196,5 +208,9 @@
   "sap.fiori": {
     "registrationIds": [],
     "archeType": "transactional"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "Fiori.service"
   }
 }

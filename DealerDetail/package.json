@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2",
+    "@sap/cds-dk": "^9",
     "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
@@ -34,8 +35,11 @@
         }
       },
       "[production]": {
-        "auth": "xsuaa"
-      }
+        "auth": "mocked"
+      },
+      "destinations": true,
+      "html5-repo": true,
+      "workzone": true
     }
   },
   "workspaces": [
